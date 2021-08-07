@@ -1,17 +1,41 @@
 name: changelog
 
 on:
-  pull_request:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
-  generate_changelog:
+  create_changelog_pr:
     runs-on: ubuntu-latest
-    name: Generate changelog for master branch
     steps:
-      - uses: actions/checkout@v1
-      - name: Generate changelog
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - run: cat CHANGELOG.md
+          node-version: '14'
+      - name: Update npm packages
+        uses: technote-space/create-pr-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          EXECUTE_COMMANDS: |
+            npm install -g auto-changelog
+            auto-changelog
+          COMMIT_MESSAGE: 'chore: update changelog'
+          PR_BRANCH_PREFIX: 'changelog/'
+          PR_BRANCH_NAME: 'chore-update-changelog-${PR_ID}'
+          PR_TITLE: 'chore: update changelog'
+          PR_BODY: |
+            <!-- START pr-commits -->
+            <!-- END pr-commits -->
+            ## Base PullRequest
+            ${PR_TITLE} (${PR_NUMBER_REF})
+            ## Command results
+            <details>
+              <summary>Details: </summary>
+              ${COMMANDS_OUTPUT}
+            </details>
+            ## Changed files
+            <details>
+              <summary>${FILES_SUMMARY}: </summary>
+              ${FILES}
+            </details>
