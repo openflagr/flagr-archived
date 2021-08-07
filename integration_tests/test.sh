@@ -357,7 +357,7 @@ step_11_test_tag_batch_evaluation()
     flagr_url=$1:18000/api/v1
     sleep 5
 
-     shakedown POST $flagr_url/evaluation/batch -H 'Content-Type:application/json' -d '{"entities":[{ "entityType": "externalalert", "entityContext": {"property_1": "value_2"} }],"flagTags": ["value_1"], "enableDebug": false }'
+    shakedown POST $flagr_url/evaluation/batch -H 'Content-Type:application/json' -d '{"entities":[{ "entityType": "externalalert", "entityContext": {"property_1": "value_2"} }],"flagTags": ["value_1"], "enableDebug": false }'
         status 200
         matches "\"flagID\":1"
         matches "\"variantKey\":\"key_1\""
@@ -370,15 +370,11 @@ step_12_test_tag_operator_batch_evaluation()
     flagr_url=$1:18000/api/v1
     sleep 5
 
-     shakedown POST $flagr_url/evaluation/batch -H 'Content-Type:application/json' -d '{"entities":[{ "entityType": "externalalert", "entityContext": {"property_1": "value_2"} }],"flagTags": ["value_1", "value_2"], "flagTagsOperator": "ALL", "enableDebug": false }'
+    shakedown POST $flagr_url/evaluation/batch -H 'Content-Type:application/json' -d '{"entities":[{ "entityType": "externalalert", "entityContext": {"property_1": "value_2"} }],"flagTags": ["value_1", "value_2"], "flagTagsOperator": "ALL", "enableDebug": false }'
         status 200
         matches "\"flagID\":1"
         matches "\"variantKey\":\"key_1\""
         matches "\"variantID\":1"
-
-    shakedown POST $flagr_url/evaluation/batch -H 'Content-Type:application/json' -d '{"entities":[{ "entityType": "externalalert", "entityContext": {"property_1": "value_2"} }],"flagTags": ["value_1", "value_3"], "flagTagsOperator": "ALL", "enableDebug": false }'
-        status 200
-        contains "\"evaluationResults\":null"
 
     shakedown POST $flagr_url/evaluation/batch -H 'Content-Type:application/json' -d '{"entities":[{ "entityType": "externalalert", "entityContext": {"property_1": "value_2"} }],"flagTags": ["value_1", "value_3"], "flagTagsOperator": "ANY", "enableDebug": false }'
         status 200
@@ -418,6 +414,9 @@ start(){
     start_test flagr_with_mysql
     start_test flagr_with_mysql8
     start_test flagr_with_postgres
+
+    # for backward compatibility with checkr/flagr
+    start_test checkr_flagr_with_sqlite
 }
 
 start
