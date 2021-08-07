@@ -8,8 +8,8 @@
     <a href="https://github.com/openflagr/flagr/releases" target="_blank">
         <img src="https://img.shields.io/github/release/openflagr/flagr.svg?style=flat&color=green">
     </a>
-    <a href="https://codecov.io/gh/openflagr/flagr" target="_blank">
-        <img src="https://codecov.io/gh/openflagr/flagr/branch/master/graph/badge.svg">
+    <a href="https://codecov.io/gh/openflagr/flagr">
+        <img src="https://codecov.io/gh/openflagr/flagr/branch/main/graph/badge.svg?token=iwjv26grrN"/>
     </a>
 </p>
 
