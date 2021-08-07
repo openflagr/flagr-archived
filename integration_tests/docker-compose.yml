@@ -28,6 +28,13 @@ services:
       POSTGRES_USER: "test"
       POSTGRES_DB: "flagr"
 
+  checkr_flagr_with_sqlite:
+    image: checkr/flagr:1.1.12
+    environment:
+      FLAGR_DB_DBDRIVER: "sqlite3"
+      FLAGR_DB_DBCONNECTIONSTR: "/tmp/flagr.sqlite3"
+    command: sh -c "sleep 15 && ./flagr"
+
   flagr_with_sqlite:
     image: flagr_integration_tests
     environment:
