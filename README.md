@@ -1,4 +1,7 @@
 <p align="center">
+    <a href="https://github.com/openflagr/flagr/actions/workflows/ci.yml?query=branch%3Amain+" target="_blank">
+        <img src="https://github.com/openflagr/flagr/actions/workflows/ci.yml/badge.svg?branch=main">
+    </a>
     <a href="https://goreportcard.com/report/github.com/openflagr/flagr" target="_blank">
         <img src="https://goreportcard.com/badge/github.com/openflagr/flagr">
     </a>
@@ -9,7 +12,7 @@
         <img src="https://img.shields.io/github/release/openflagr/flagr.svg?style=flat&color=green">
     </a>
     <a href="https://codecov.io/gh/openflagr/flagr">
-        <img src="https://codecov.io/gh/openflagr/flagr/branch/main/graph/badge.svg?token=iwjv26grrN"/>
+        <img src="https://codecov.io/gh/openflagr/flagr/branch/main/graph/badge.svg?token=iwjv26grrN">
     </a>
 </p>
 
