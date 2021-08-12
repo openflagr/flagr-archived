@@ -86,6 +86,6 @@ Error Set:
 | Python | [pyflagr](https://github.com/openflagr/pyflagr) |
 | Ruby | [rbflagr](https://github.com/openflagr/rbflagr) |
 
-## License and Credits
-- `openflagr/flagr` Apache 2.0
-- `checkr/flagr` Apache 2.0
+## License and Credit
+- [`openflagr/flagr`](https://github.com/openflagr/flagr) Apache 2.0
+- [`checkr/flagr`](https://github.com/checkr/flagr) Apache 2.0
