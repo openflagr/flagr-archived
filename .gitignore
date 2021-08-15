@@ -27,3 +27,4 @@ _tools/
 _data
 coverage.txt
 /vendor
+.history
