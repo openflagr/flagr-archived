@@ -1,4 +1,8 @@
 <p align="center">
+    <img src="docs/images/logo.svg" width="300px" />
+</p>
+
+<p align="center">
     <a href="https://github.com/openflagr/flagr/actions/workflows/ci.yml?query=branch%3Amain+" target="_blank">
         <img src="https://github.com/openflagr/flagr/actions/workflows/ci.yml/badge.svg?branch=main">
     </a>
