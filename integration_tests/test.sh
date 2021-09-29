@@ -397,7 +397,8 @@ start() {
     start_test flagr_with_sqlite
     start_test flagr_with_mysql
     start_test flagr_with_mysql8
-    start_test flagr_with_postgres
+    start_test flagr_with_postgres9
+    start_test flagr_with_postgres13
 
     # for backward compatibility with checkr/flagr
     start_test checkr_flagr_with_sqlite
