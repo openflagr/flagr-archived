@@ -44,6 +44,13 @@ step_2_test_crud_flag() {
     contains "$key_1"
 
     ################################################
+    # Test create flag with invalid params
+    ################################################
+    shakedown POST "$flagr_url"/flags -H 'Content-Type:application/json' -d "{\"description\": \"$description_1\", \"key\": \"$key_1\"}"
+    status 400
+    matches '"message":"cannot create flag. UNIQUE constraint failed: flags.key"'
+
+    ################################################
     # Test put flag
     ################################################
     shakedown PUT "$flagr_url"/flags/1 -H 'Content-Type:application/json' -d "{\"description\": \"$description_3\", \"key\": \"$key_3\", \"enabled\": true}"
@@ -75,6 +82,13 @@ step_2_test_crud_flag() {
     shakedown GET "$flagr_url"/flags/entity_types -H 'Content-Type:application/json'
     status 200
     contains 'candidate_resource_id'
+
+    ################################################
+    # Test update flag with invalid params
+    ################################################
+    shakedown PUT "$flagr_url"/flags/2 -H 'Content-Type:application/json' -d "{\"description\": \"$description_1\", \"key\": \"$key_3\"}"
+    status 400
+    matches '"message":"UNIQUE constraint failed: flags.key"'
 
     ################################################
     # Test query flags

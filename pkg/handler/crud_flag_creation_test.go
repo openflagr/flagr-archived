@@ -120,4 +120,20 @@ func TestCrudCreateFlagWithFailures(t *testing.T) {
 		})
 		assert.NotZero(t, res.(*flag.CreateFlagDefault).Payload)
 	})
+
+	t.Run("CreateFlag - Uniqueness Constraint should return 400", func(t *testing.T) {
+		m := "UNIQUE constraint failed: flags.key"
+		db.Error = fmt.Errorf(m)
+		params := flag.CreateFlagParams{
+			Body: &models.CreateFlagRequest{
+				Description: util.StringPtr("Switzerland"),
+				Key:         "ch",
+			},
+		}
+		res = c.CreateFlag(params).(*flag.CreateFlagDefault)
+		expRes := flag.NewCreateFlagDefault(400).WithPayload(ErrorMessage("cannot create flag. %s", m))
+
+		assert.Equal(t, res, expRes)
+		db.Error = nil
+	})
 }

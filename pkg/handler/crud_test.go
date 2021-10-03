@@ -236,15 +236,20 @@ func TestCrudFlagsWithFailures(t *testing.T) {
 	})
 
 	t.Run("PutFlag - cannot set duplicate flag_key", func(t *testing.T) {
+		m := "UNIQUE constraint failed: flags.key"
+		db.Error = fmt.Errorf(m)
 		res = c.PutFlag(flag.PutFlagParams{
 			FlagID: int64(2),
 			Body: &models.PutFlagRequest{
+				Key:                util.StringPtr("flag_key_1"),
 				Description:        util.StringPtr("another funny flag"),
 				DataRecordsEnabled: util.BoolPtr(true),
-				Key:                util.StringPtr("flag_key_1"),
 			}},
 		)
-		assert.NotZero(t, res.(*flag.PutFlagDefault).Payload)
+		expRes := flag.NewCreateFlagDefault(400).WithPayload(ErrorMessage("%s", m))
+		assert.Equal(t, res, expRes)
+
+		db.Error = nil
 	})
 
 	t.Run("SetFlagEnabledState - try to set on a non-existing flag", func(t *testing.T) {

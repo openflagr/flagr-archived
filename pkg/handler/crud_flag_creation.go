@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strings"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/jinzhu/gorm"
 	"github.com/openflagr/flagr/pkg/entity"
@@ -26,7 +28,15 @@ func (c *crud) CreateFlag(params flag.CreateFlagParams) middleware.Responder {
 
 	if err := tx.Create(f).Error; err != nil {
 		tx.Rollback()
-		return flag.NewCreateFlagDefault(500).WithPayload(
+		code := 500
+
+		// Flag.Key Uniqueness Errors should respond with 400 Bad Request
+		// See: http://github.com/openflagr/flagr/issues/41
+		if strings.Contains(err.Error(), "UNIQUE") {
+			code = 400
+		}
+
+		return flag.NewCreateFlagDefault(code).WithPayload(
 			ErrorMessage("cannot create flag. %s", err))
 	}
 

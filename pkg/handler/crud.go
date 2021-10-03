@@ -238,7 +238,15 @@ func (c *crud) PutFlag(params flag.PutFlagParams) middleware.Responder {
 	}
 
 	if err := tx.Save(f).Error; err != nil {
-		return flag.NewPutFlagDefault(500).WithPayload(ErrorMessage("%s", err))
+		code := 500
+
+		// Flag.Key Uniqueness Errors should respond with 400 Bad Request
+		// See: http://github.com/openflagr/flagr/issues/41
+		if strings.Contains(err.Error(), "UNIQUE") {
+			code = 400
+		}
+
+		return flag.NewPutFlagDefault(code).WithPayload(ErrorMessage("%s", err))
 	}
 
 	if err := entity.PreloadSegmentsVariantsTags(tx).First(f, params.FlagID).Error; err != nil {
