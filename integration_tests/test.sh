@@ -46,15 +46,19 @@ step_2_test_crud_flag() {
     ################################################
     # Test put flag
     ################################################
-    shakedown PUT "$flagr_url"/flags/1 -H 'Content-Type:application/json' -d "{\"description\": \"$description_3\", \"key\": \"$key_3\", \"enabled\": true}"
+    shakedown PUT "$flagr_url"/flags/1 -H 'Content-Type:application/json' -d "{\"description\": \"$description_3\", \"key\": \"$key_3\", \"enabled\": true, \"dataRecordsEnabled\": true}"
     status 200
     contains "$description_3"
     contains "$key_3"
+    matches '"enabled":true'
+    matches '"dataRecordsEnabled":true'
 
     shakedown GET "$flagr_url"/flags/1 -H 'Content-Type:application/json'
     status 200
     contains "$description_3"
     contains "$key_3"
+    matches '"enabled":true'
+    matches '"dataRecordsEnabled":true'
 
     shakedown PUT "$flagr_url"/flags/1/enabled -H 'Content-Type:application/json' -d "{\"enabled\": false}"
     status 200

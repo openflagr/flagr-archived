@@ -212,12 +212,19 @@ func (c *crud) PutFlag(params flag.PutFlagParams) middleware.Responder {
 		return flag.NewPutFlagDefault(404).WithPayload(ErrorMessage("%s", err))
 	}
 
+	// See: https://github.com/openflagr/flagr/issues/43
+	if params.Body.Enabled != nil {
+		f.Enabled = *params.Body.Enabled
+	}
+
 	if params.Body.Description != nil {
 		f.Description = *params.Body.Description
 	}
+
 	if params.Body.DataRecordsEnabled != nil {
 		f.DataRecordsEnabled = *params.Body.DataRecordsEnabled
 	}
+
 	if params.Body.Key != nil {
 		key, err := entity.CreateFlagKey(*params.Body.Key)
 		if err != nil {
@@ -225,6 +232,7 @@ func (c *crud) PutFlag(params flag.PutFlagParams) middleware.Responder {
 		}
 		f.Key = key
 	}
+
 	if params.Body.EntityType != nil {
 		et := *params.Body.EntityType
 		if err := entity.CreateFlagEntityType(tx, et); err != nil {

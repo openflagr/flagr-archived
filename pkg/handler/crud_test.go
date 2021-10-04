@@ -103,6 +103,7 @@ func TestCrudFlags(t *testing.T) {
 		res = c.PutFlag(flag.PutFlagParams{
 			FlagID: int64(1),
 			Body: &models.PutFlagRequest{
+				Enabled:            util.BoolPtr(true),
 				Description:        util.StringPtr("another funny flag"),
 				DataRecordsEnabled: util.BoolPtr(true),
 				Key:                util.StringPtr("flag_key_1"),
@@ -111,6 +112,7 @@ func TestCrudFlags(t *testing.T) {
 		)
 		assert.NotZero(t, res.(*flag.PutFlagOK).Payload.ID)
 		assert.Equal(t, "flag_key_1", res.(*flag.PutFlagOK).Payload.Key)
+		assert.Equal(t, true, res.(*flag.PutFlagOK).Payload.Enabled)
 		assert.NotZero(t, len(res.(*flag.PutFlagOK).Payload.Segments))
 		assert.NotZero(t, len(res.(*flag.PutFlagOK).Payload.Variants))
 	})
