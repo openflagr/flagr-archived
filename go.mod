@@ -5,7 +5,7 @@ go 1.16
 require (
 	cloud.google.com/go v0.37.4
 	github.com/DataDog/datadog-go v0.0.0-20180330214955-e67964b4021a
-	github.com/Shopify/sarama v1.19.0
+	github.com/Shopify/sarama v1.29.1
 	github.com/a8m/kinesis-producer v0.0.0-20180723062609-03228a9f79b3
 	github.com/auth0/go-jwt-middleware v1.0.2-0.20210804140707-b4090e955b98
 	github.com/avast/retry-go v2.2.0+incompatible
@@ -44,13 +44,13 @@ require (
 	github.com/rs/cors v1.5.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cast v1.3.0
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/tinylib/msgp v1.1.0 // indirect
 	github.com/urfave/negroni v1.0.0
 	github.com/yadvendar/negroni-newrelic-go-agent v0.0.0-20160803090806-3dc58758cb67
 	github.com/zhouzhuojie/conditions v0.2.3
 	github.com/zhouzhuojie/withtimeout v0.0.0-20190405051827-12b39eb2edd5
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	google.golang.org/api v0.3.1
 	google.golang.org/grpc v1.19.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.9.0
