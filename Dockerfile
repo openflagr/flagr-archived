@@ -11,7 +11,7 @@ RUN make build_ui
 ######################################
 # Prepare go_builder
 ######################################
-FROM golang:1.16 as go_builder
+FROM golang:1.17 as go_builder
 WORKDIR /go/src/github.com/openflagr/flagr
 ADD . .
 RUN make build
@@ -23,7 +23,6 @@ FROM frolvlad/alpine-glibc:alpine-3.10
 RUN apk add --no-cache curl
 WORKDIR /go/src/github.com/openflagr/flagr
 VOLUME ["/data"]
-
 ENV HOST=0.0.0.0
 ENV PORT=18000
 ENV FLAGR_DB_DBDRIVER=sqlite3
