@@ -130,7 +130,7 @@ var Config = struct {
 	// Kafka related configurations for data records logging (Flagr Metrics)
 	RecorderKafkaVersion          string        `env:"FLAGR_RECORDER_KAFKA_VERSION" envDefault:"0.8.2.0"`
 	RecorderKafkaBrokers          string        `env:"FLAGR_RECORDER_KAFKA_BROKERS" envDefault:":9092"`
-	RecorderKafkaCompressionCodec int8          `env:"FLAGR_RECORDER_KAFKA_COMPRESSION_CODEC" envDefault:":0"`
+	RecorderKafkaCompressionCodec int8          `env:"FLAGR_RECORDER_KAFKA_COMPRESSION_CODEC" envDefault:"0"`
 	RecorderKafkaCertFile         string        `env:"FLAGR_RECORDER_KAFKA_CERTFILE" envDefault:""`
 	RecorderKafkaKeyFile          string        `env:"FLAGR_RECORDER_KAFKA_KEYFILE" envDefault:""`
 	RecorderKafkaCAFile           string        `env:"FLAGR_RECORDER_KAFKA_CAFILE" envDefault:""`
