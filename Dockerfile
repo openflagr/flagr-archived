@@ -34,5 +34,8 @@ COPY --from=npm_builder /go/src/github.com/openflagr/flagr/browser/flagr-ui/dist
 ADD ./buildscripts ./buildscripts
 ADD ./buildscripts/demo_sqlite3.db /data/demo_sqlite3.db
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 EXPOSE 18000
 CMD ./flagr
