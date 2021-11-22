@@ -9,7 +9,7 @@ RUN make build
 ######################################
 # Copy from builder to alpine image
 ######################################
-FROM frolvlad/alpine-glibc:alpine-3.10
+FROM frolvlad/alpine-glibc:alpine-3.14
 RUN apk add --no-cache curl
 WORKDIR /go/src/github.com/openflagr/flagr
 COPY --from=go_builder /go/src/github.com/openflagr/flagr/flagr ./flagr
