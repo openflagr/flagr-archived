@@ -31,6 +31,7 @@ func mustParseKafkaVersion(version string) sarama.KafkaVersion {
 // NewKafkaRecorder creates a new Kafka recorder
 var NewKafkaRecorder = func() DataRecorder {
 	cfg := sarama.NewConfig()
+
 	tlscfg := createTLSConfiguration(
 		config.Config.RecorderKafkaCertFile,
 		config.Config.RecorderKafkaKeyFile,
@@ -50,6 +51,8 @@ var NewKafkaRecorder = func() DataRecorder {
 	}
 
 	cfg.Net.MaxOpenRequests = config.Config.RecorderKafkaMaxOpenReqs
+
+	cfg.Producer.Compression = sarama.CompressionCodec(config.Config.RecorderKafkaCompressionCodec)
 	cfg.Producer.RequiredAcks = sarama.RequiredAcks(config.Config.RecorderKafkaRequiredAcks)
 	cfg.Producer.Idempotent = config.Config.RecorderKafkaIdempotent
 	cfg.Producer.Retry.Max = config.Config.RecorderKafkaRetryMax
