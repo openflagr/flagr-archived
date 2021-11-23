@@ -50,8 +50,11 @@ var NewKafkaRecorder = func() DataRecorder {
 		cfg.Net.SASL.Password = config.Config.RecorderKafkaSASLPassword
 	}
 
+	cfg.Net.MaxOpenRequests = config.Config.RecorderKafkaMaxOpenReqs
+
 	cfg.Producer.Compression = sarama.CompressionCodec(config.Config.RecorderKafkaCompressionCodec)
 	cfg.Producer.RequiredAcks = sarama.RequiredAcks(config.Config.RecorderKafkaRequiredAcks)
+	cfg.Producer.Idempotent = config.Config.RecorderKafkaIdempotent
 	cfg.Producer.Retry.Max = config.Config.RecorderKafkaRetryMax
 	cfg.Producer.Flush.Frequency = config.Config.RecorderKafkaFlushFrequency
 	cfg.Version = mustParseKafkaVersion(config.Config.RecorderKafkaVersion)
