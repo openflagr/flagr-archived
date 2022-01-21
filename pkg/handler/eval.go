@@ -7,12 +7,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/openflagr/flagr/pkg/config"
 	"github.com/openflagr/flagr/pkg/entity"
 	"github.com/openflagr/flagr/pkg/util"
 	"github.com/openflagr/flagr/swagger_gen/models"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/evaluation"
+	"gorm.io/gorm"
 
 	"github.com/bsm/ratelimit"
 	"github.com/davecgh/go-spew/spew"

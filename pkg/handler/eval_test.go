@@ -11,9 +11,9 @@ import (
 	"github.com/openflagr/flagr/swagger_gen/models"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/evaluation"
 
-	"github.com/jinzhu/gorm"
 	"github.com/prashantv/gostub"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestEvalSegment(t *testing.T) {

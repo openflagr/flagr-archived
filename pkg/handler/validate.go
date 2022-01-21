@@ -59,7 +59,7 @@ var validateDeleteVariant = func(params variant.DeleteVariantParams) *Error {
 				if d.Percent != uint(0) {
 					return NewError(400, "error deleting variant %v. distribution %v still has non-zero distribution %v", params.VariantID, d.ID, d.Percent)
 				}
-				if err := getDB().Delete(entity.Distribution{}, d.ID).Error; err != nil {
+				if err := getDB().Delete(&entity.Distribution{}, d.ID).Error; err != nil {
 					return NewError(500, "error deleting distribution %v. reason: %s", d.ID, err)
 				}
 			}

@@ -18,7 +18,12 @@ func TestCrudCreateFlag(t *testing.T) {
 	db := entity.NewTestDB()
 	c := &crud{}
 
-	defer db.Close()
+	tmpDB, dbErr := db.DB()
+	if dbErr != nil {
+		t.Errorf("Failed to get database")
+	}
+
+	defer tmpDB.Close()
 	defer gostub.StubFunc(&getDB, db).Reset()
 
 	t.Run("it should be able to create one flag", func(t *testing.T) {
@@ -76,7 +81,12 @@ func TestCrudCreateFlagWithFailures(t *testing.T) {
 	db := entity.NewTestDB()
 	c := &crud{}
 
-	defer db.Close()
+	tmpDB, dbErr := db.DB()
+	if dbErr != nil {
+		t.Errorf("Failed to get database")
+	}
+
+	defer tmpDB.Close()
 	defer gostub.StubFunc(&getDB, db).Reset()
 
 	t.Run("CreateFlag - got e2r MapFlag error", func(t *testing.T) {
