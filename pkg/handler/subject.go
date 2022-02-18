@@ -6,7 +6,7 @@ import (
 	"github.com/openflagr/flagr/pkg/config"
 	"github.com/openflagr/flagr/pkg/util"
 
-	jwt "github.com/form3tech-oss/jwt-go"
+	"github.com/lestrrat-go/jwx/jwt"
 )
 
 func getSubjectFromRequest(r *http.Request) string {
@@ -14,14 +14,16 @@ func getSubjectFromRequest(r *http.Request) string {
 		return ""
 	}
 
+	userProperty := config.UserPropertyType(config.Config.JWTAuthUserProperty)
+
 	if config.Config.JWTAuthEnabled {
-		token, ok := r.Context().Value(config.Config.JWTAuthUserProperty).(*jwt.Token)
+		token, ok := r.Context().Value(userProperty).(jwt.Token)
 		if !ok {
 			return ""
 		}
 
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			return util.SafeString(claims[config.Config.JWTAuthUserClaim])
+		if v, ok := token.Get(config.Config.JWTAuthUserClaim); ok {
+			return util.SafeString(v)
 		}
 
 	} else if config.Config.HeaderAuthEnabled {

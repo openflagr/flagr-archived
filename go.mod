@@ -7,7 +7,6 @@ require (
 	github.com/DataDog/datadog-go v0.0.0-20180330214955-e67964b4021a
 	github.com/Shopify/sarama v1.29.1
 	github.com/a8m/kinesis-producer v0.0.0-20180723062609-03228a9f79b3
-	github.com/auth0/go-jwt-middleware v1.0.2-0.20210804140707-b4090e955b98
 	github.com/avast/retry-go v2.2.0+incompatible
 	github.com/aws/aws-sdk-go v1.34.28
 	github.com/brandur/simplebox v0.0.0-20150921201729-84e9865bb03a
@@ -17,7 +16,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9
 	github.com/evalphobia/logrus_sentry v0.4.6
-	github.com/form3tech-oss/jwt-go v3.2.3+incompatible
 	github.com/getsentry/raven-go v0.0.0-20180903072508-084a9de9eb03
 	github.com/go-openapi/errors v0.19.9
 	github.com/go-openapi/loads v0.20.1
@@ -56,11 +54,14 @@ require (
 	gopkg.in/DataDog/dd-trace-go.v1 v1.9.0
 )
 
+require github.com/lestrrat-go/jwx v1.2.18
+
 require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.0-20210816181553-5444fa50b93d // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/eapache/go-resiliency v1.2.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
@@ -70,6 +71,7 @@ require (
 	github.com/go-openapi/jsonreference v0.19.5 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/goccy/go-json v0.9.4 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
@@ -86,6 +88,11 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.12.2 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
+	github.com/lestrrat-go/blackmagic v1.0.0 // indirect
+	github.com/lestrrat-go/httpcc v1.0.0 // indirect
+	github.com/lestrrat-go/iter v1.0.1 // indirect
+	github.com/lestrrat-go/option v1.0.0 // indirect
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect

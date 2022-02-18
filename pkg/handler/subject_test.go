@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	jwt "github.com/form3tech-oss/jwt-go"
+	jwt "github.com/lestrrat-go/jwx/jwt"
 	"github.com/openflagr/flagr/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,17 +22,16 @@ func TestGetSubjectFromJWT(t *testing.T) {
 	ctx = context.TODO()
 	assert.Equal(t, getSubjectFromRequest(r.WithContext(ctx)), "")
 
-	//nolint:staticcheck // jwt-middleware is using the string type of context key
-	ctx = context.WithValue(ctx, config.Config.JWTAuthUserProperty, &jwt.Token{})
-	assert.Equal(t, getSubjectFromRequest(r.WithContext(ctx)), "")
+	userProperty := config.UserPropertyType(config.Config.JWTAuthUserProperty)
+	token, _ := jwt.Parse([]byte{})
 
 	//nolint:staticcheck // jwt-middleware is using the string type of context key
-	ctx = context.WithValue(ctx, config.Config.JWTAuthUserProperty, &jwt.Token{
-		Claims: jwt.MapClaims{
-			"sub": "foo@example.com",
-		},
-		Valid: true,
-	})
+	ctx = context.WithValue(ctx, userProperty, token)
+	assert.Equal(t, getSubjectFromRequest(r.WithContext(ctx)), "")
+
+	token, _ = jwt.Parse([]byte(`{"sub": "foo@example.com"}`))
+	//nolint:staticcheck // jwt-middleware is using the string type of context key
+	ctx = context.WithValue(ctx, userProperty, token)
 	assert.Equal(t, getSubjectFromRequest(r.WithContext(ctx)), "foo@example.com")
 }
 

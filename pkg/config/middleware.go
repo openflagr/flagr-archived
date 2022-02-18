@@ -1,7 +1,11 @@
 package config
 
 import (
+	"context"
 	"crypto/subtle"
+	"crypto/x509"
+	pem "encoding/pem"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,9 +13,10 @@ import (
 	"time"
 
 	"github.com/DataDog/datadog-go/statsd"
-	jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/gohttp/pprof"
+	"github.com/lestrrat-go/jwx/jwa"
+	"github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/jwt"
 	negronilogrus "github.com/meatballhat/negroni-logrus"
 	"github.com/phyber/negroni-gzip/gzip"
 	"github.com/prometheus/client_golang/prometheus"
@@ -126,55 +131,103 @@ func setupRecoveryMiddleware() *negroni.Recovery {
 	return r
 }
 
+func parseRSACertificate() (interface{}, error) {
+	block, _ := pem.Decode([]byte(Config.JWTAuthSecret))
+	if block == nil {
+		logrus.Warnf("failed to decode PEM block containing public key")
+		return nil, errors.New("failed to decode PEM")
+	}
+
+	// Parse decoded cert.
+	verificationKey, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err == nil {
+			verificationKey = cert.PublicKey
+		} else {
+			logrus.Warnf("no valid public key exists: %s\n", err)
+			return nil, err
+		}
+	}
+
+	return verificationKey, nil
+}
+
 /**
 setupJWTAuthMiddleware setup an JWTMiddleware from the ENV config
 */
 func setupJWTAuthMiddleware() *jwtAuth {
-	var signingMethod jwt.SigningMethod
-	var validationKey interface{}
-	var errParsingKey error
+	var signingMethod jwa.SignatureAlgorithm
+	var ar *jwk.AutoRefresh
+	var verificationKey interface{}
+	var err error
 
-	switch Config.JWTAuthSigningMethod {
-	case "HS256":
-		signingMethod = jwt.SigningMethodHS256
-		validationKey = []byte(Config.JWTAuthSecret)
-	case "HS512":
-		signingMethod = jwt.SigningMethodHS512
-		validationKey = []byte(Config.JWTAuthSecret)
-	case "RS256":
-		signingMethod = jwt.SigningMethodRS256
-		validationKey, errParsingKey = jwt.ParseRSAPublicKeyFromPEM([]byte(Config.JWTAuthSecret))
-	default:
-		signingMethod = jwt.SigningMethodHS256
-		validationKey = []byte("")
+	if !Config.JWKSEnabled {
+		switch Config.JWTAuthSigningMethod {
+		case "HS256":
+			signingMethod = jwa.HS256
+			if Config.JWTAuthSecret != "" {
+				verificationKey, err = jwk.New([]byte(Config.JWTAuthSecret))
+			} else {
+				verificationKey = nil
+			}
+		case "HS512":
+			signingMethod = jwa.HS512
+			if Config.JWTAuthSecret != "" {
+				verificationKey, err = jwk.New([]byte(Config.JWTAuthSecret))
+			} else {
+				verificationKey = nil
+			}
+		case "RS256":
+			signingMethod = jwa.RS256
+			verificationKey, err = parseRSACertificate()
+		default:
+			signingMethod = jwa.HS256
+			verificationKey = nil
+			err = nil
+		}
+
+		if err != nil {
+			logrus.Warnf("error in parsing JWTAuthSecret: %s\n", err)
+		}
+	} else {
+		// Initialize JWKS caching.
+		ar = jwk.NewAutoRefresh(context.Background())
+		ar.Configure(Config.JWKSURL, jwk.WithMinRefreshInterval(Config.JWKSMinRefreshInterval))
+
+		_, err := ar.Refresh(context.Background(), Config.JWKSURL)
+		if err != nil {
+			logrus.Warnf("failed to complete initial JWKS fetch successfully: %s", err)
+		}
+	}
+
+	// Set options for JWT parsing.
+	var JWTOptions []jwt.ParseOption
+	if verificationKey != nil {
+		JWTOptions = append(JWTOptions, jwt.WithVerify(signingMethod, verificationKey))
+	}
+
+	if Config.JWKSInferAlgorithmFromKey {
+		JWTOptions = append(JWTOptions, jwt.InferAlgorithmFromKey(Config.JWKSInferAlgorithmFromKey))
+	}
+
+	if Config.JWKSUseDefaultKey {
+		JWTOptions = append(JWTOptions, jwt.UseDefaultKey(Config.JWKSUseDefaultKey))
 	}
 
 	return &jwtAuth{
 		PrefixWhitelistPaths: Config.JWTAuthPrefixWhitelistPaths,
 		ExactWhitelistPaths:  Config.JWTAuthExactWhitelistPaths,
-		JWTMiddleware: jwtmiddleware.New(jwtmiddleware.Options{
-			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-				return validationKey, errParsingKey
-			},
-			SigningMethod: signingMethod,
-			Extractor: jwtmiddleware.FromFirst(
-				func(r *http.Request) (string, error) {
-					c, err := r.Cookie(Config.JWTAuthCookieTokenName)
-					if err != nil {
-						return "", nil
-					}
-					return c.Value, nil
-				},
-				jwtmiddleware.FromAuthHeader,
-			),
-			UserProperty: Config.JWTAuthUserProperty,
-			Debug:        Config.JWTAuthDebug,
-			ErrorHandler: jwtErrorHandler,
-		}),
+		alg:                  signingMethod,
+		verifyKey:            verificationKey,
+		verificationKeyErr:   err,
+		userProperty:         UserPropertyType(Config.JWTAuthUserProperty),
+		autoRefresh:          ar,
+		parseOptions:         JWTOptions,
 	}
 }
 
-func jwtErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
+func jwtErrorHandler(w http.ResponseWriter, r *http.Request) {
 	switch Config.JWTAuthNoTokenStatusCode {
 	case http.StatusTemporaryRedirect:
 		http.Redirect(w, r, Config.JWTAuthNoTokenRedirectURL, http.StatusTemporaryRedirect)
@@ -186,10 +239,52 @@ func jwtErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
 	}
 }
 
+// Type for userProprty value for Context.WithValue()
+type UserPropertyType string
+
 type jwtAuth struct {
 	PrefixWhitelistPaths []string
 	ExactWhitelistPaths  []string
-	JWTMiddleware        *jwtmiddleware.JWTMiddleware
+	alg                  jwa.SignatureAlgorithm
+	verifyKey            interface{}
+	verificationKeyErr   error
+	userProperty         UserPropertyType
+	autoRefresh          *jwk.AutoRefresh
+	parseOptions         []jwt.ParseOption
+}
+
+// Take in JWT string and parse to Token, if able.
+func (a *jwtAuth) parseStringToToken(cookieValue string, params ...jwt.ParseOption) (jwt.Token, error) {
+	if Config.JWKSEnabled {
+		keyset, err := a.autoRefresh.Fetch(context.Background(), Config.JWKSURL)
+		if err != nil {
+			logrus.Warnf("failed to fetch JWKS: %s\n", err)
+			return nil, err
+		}
+
+		token, err := jwt.ParseString(cookieValue, append(params, jwt.WithKeySet(keyset))...)
+		return token, err
+	}
+
+	token, err := jwt.ParseString(cookieValue, params...)
+	return token, err
+}
+
+// Parse JWT string from Authorization header.
+func (a *jwtAuth) parseTokenFromHeader(req *http.Request) (string, error) {
+	header := req.Header.Get("Authorization")
+
+	if header == "" {
+		return "", errors.New("no authorization header exists")
+	}
+
+	headerFields := strings.Fields(header)
+
+	if len(headerFields) == 2 && headerFields[0] == "Bearer" {
+		return headerFields[1], nil
+	}
+
+	return "", errors.New("invalid bearer token format")
 }
 
 func (a *jwtAuth) whitelist(req *http.Request) bool {
@@ -217,7 +312,49 @@ func (a *jwtAuth) ServeHTTP(w http.ResponseWriter, req *http.Request, next http.
 		next(w, req)
 		return
 	}
-	a.JWTMiddleware.HandlerWithNext(w, req, next)
+
+	var token jwt.Token
+
+	// If key was unable to be parsed on auth init and not using JWKS, error out.
+	if a.verificationKeyErr != nil && !Config.JWKSEnabled {
+		jwtErrorHandler(w, req)
+		return
+	}
+
+	// Look for JWT token in cookie.
+	c, err := req.Cookie(Config.JWTAuthCookieTokenName)
+	if err == nil {
+		token, err = a.parseStringToToken(c.Value, a.parseOptions...)
+		if err != nil {
+			jwtErrorHandler(w, req)
+			return
+		}
+	} else {
+		// Look for JWT token in "Authorization" header.
+		headerString, err := a.parseTokenFromHeader(req)
+		if err != nil {
+			jwtErrorHandler(w, req)
+			return
+		}
+
+		token, err = a.parseStringToToken(headerString, a.parseOptions...)
+		if err != nil {
+			jwtErrorHandler(w, req)
+			return
+		}
+	}
+
+	// jwt.Validate() will validate the following fields if they exist on the JWT:
+	// time-related components: "iat", "exp", and "nbf"
+	if err := jwt.Validate(token); err != nil {
+		jwtErrorHandler(w, req)
+		return
+	} else {
+		// JWT is valid: add with context "Config.JWTAuthUserProperty" in order to access user claim in subject.go
+		newRequest := req.WithContext(context.WithValue(req.Context(), a.userProperty, token))
+		next(w, newRequest)
+		return
+	}
 }
 
 /**
