@@ -13,7 +13,13 @@ import (
 func TestGetByFlagKeyOrID(t *testing.T) {
 	fixtureFlag := entity.GenFixtureFlag()
 	db := entity.PopulateTestDB(fixtureFlag)
-	defer db.Close()
+
+	tmpDB, dbErr := db.DB()
+	if dbErr != nil {
+		t.Errorf("Failed to get database")
+	}
+
+	defer tmpDB.Close()
 	defer gostub.StubFunc(&getDB, db).Reset()
 
 	ec := GetEvalCache()
@@ -26,7 +32,13 @@ func TestGetByFlagKeyOrID(t *testing.T) {
 func TestGetByTags(t *testing.T) {
 	fixtureFlag := entity.GenFixtureFlag()
 	db := entity.PopulateTestDB(fixtureFlag)
-	defer db.Close()
+
+	tmpDB, dbErr := db.DB()
+	if dbErr != nil {
+		t.Errorf("Failed to get database")
+	}
+
+	defer tmpDB.Close()
 	defer gostub.StubFunc(&getDB, db).Reset()
 
 	ec := GetEvalCache()
