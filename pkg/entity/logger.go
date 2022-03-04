@@ -33,8 +33,11 @@ func (l *Logger) Error(ctx context.Context, s string, args ...interface{}) {
 }
 
 func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	elapsed := time.Since(begin)
-	sql, _ := fc()
-
-	logrus.WithContext(ctx).Infof("%s [%s]", sql, elapsed)
+	if logrus.GetLevel() >= logrus.TraceLevel {
+		sql, _ := fc()
+		elapsed := time.Since(begin)
+		if elapsed > l.SlowThreshold {
+			logrus.WithContext(ctx).Tracef("%s [%s]", sql, elapsed)
+		}
+	}
 }
