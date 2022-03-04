@@ -1,7 +1,7 @@
 ######################################
 # Prepare npm_builder
 ######################################
-FROM node:14 as npm_builder
+FROM node:16 as npm_builder
 WORKDIR /go/src/github.com/openflagr/flagr
 ADD . .
 ARG FLAGR_UI_POSSIBLE_ENTITY_TYPES=null
@@ -19,7 +19,7 @@ RUN make build
 ######################################
 # Copy from builder to alpine image
 ######################################
-FROM frolvlad/alpine-glibc:alpine-3.14
+FROM frolvlad/alpine-glibc:alpine-3.15
 RUN apk add --no-cache curl
 WORKDIR /go/src/github.com/openflagr/flagr
 VOLUME ["/data"]
