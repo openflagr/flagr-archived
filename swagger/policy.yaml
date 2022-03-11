@@ -1,0 +1,82 @@
+post:
+  tags:
+    - policy
+  operationId: createPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Create a new Casbin policy
+      required: true
+      schema:
+        $ref: "#/definitions/createPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/createPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"
+
+put:
+  tags:
+    - policy
+  operationId: putPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Update an existing Casbin policy
+      required: true
+      schema:
+        $ref: "#/definitions/putPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/putPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"
+
+delete:
+  tags:
+    - policy
+  operationId: deletePolicy
+  parameters:
+    - in: body
+      name: body
+      description: Delete a Casbin policy
+      required: true
+      schema:
+        $ref: "#/definitions/deletePolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/deletePolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"
+
+get:
+  tags:
+    - policy
+  operationId: findPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Find Casbin policies, optionally filtering by User, Action, and/or Object
+      schema:
+        $ref: "#/definitions/findPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/findPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"

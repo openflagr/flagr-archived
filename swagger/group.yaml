@@ -1,0 +1,86 @@
+post:
+  tags:
+    - policy
+    - grouping
+  operationId: createGroupPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Create a new Casbin group policy, effectively making a subject (user or group) a member of a group.
+      required: true
+      schema:
+        $ref: "#/definitions/createGroupPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/createGroupPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"
+
+put:
+  tags:
+    - policy
+    - grouping
+  operationId: putGroupPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Update an existing Casbin group policy
+      required: true
+      schema:
+        $ref: "#/definitions/putGroupPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/putGroupPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"
+
+delete:
+  tags:
+    - policy
+    - grouping
+  operationId: deleteGroupPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Delete a Casbin group policy (remove a subject from a group)
+      required: true
+      schema:
+        $ref: "#/definitions/deleteGroupPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/deleteGroupPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"
+
+get:
+  tags:
+    - policy
+    - grouping
+  operationId: findGroupPolicy
+  parameters:
+    - in: body
+      name: body
+      description: Find Casbin group policies, optionally filtering by subject or group name
+      schema:
+        $ref: "#/definitions/findGroupPolicyContext"
+  responses:
+    200:
+      description: evaluation result
+      schema:
+        $ref: "#/definitions/findGroupPolicyResponse"
+    default:
+      description: generic error response
+      schema:
+        $ref: "#/definitions/error"

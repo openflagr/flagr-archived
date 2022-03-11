@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/openflagr/flagr/pkg/entity"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/export"
@@ -42,12 +43,18 @@ var exportSQLiteFile = func(excludeSnapshots *bool) (file io.ReadCloser, done fu
 	if err := exportFlags(tmpDB); err != nil {
 		return nil, done, err
 	}
+
 	if excludeSnapshots == nil || !*excludeSnapshots {
 		if err := exportFlagSnapshots(tmpDB); err != nil {
 			return nil, done, err
 		}
 	}
+
 	if err := exportFlagEntityTypes(tmpDB); err != nil {
+		return nil, done, err
+	}
+
+	if err := exportCasbinRules(tmpDB); err != nil {
 		return nil, done, err
 	}
 
@@ -105,4 +112,22 @@ var exportEvalCacheJSONHandler = func(export.GetExportEvalCacheJSONParams) middl
 	return export.NewGetExportEvalCacheJSONOK().WithPayload(
 		GetEvalCache().export(),
 	)
+}
+
+func exportCasbinRules(tmpDB *gorm.DB) error {
+	rules := make([]gormadapter.CasbinRule, 0)
+
+	if err := getDB().Find(&rules).Error; err != nil {
+		return err
+	}
+
+	for _, rule := range rules {
+		if err := tmpDB.Create(&rule).Error; err != nil {
+			return err
+		}
+	}
+
+	logrus.WithField("count", len(rules)).Debugf("export casbin rules")
+
+	return nil
 }

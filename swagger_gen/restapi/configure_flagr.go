@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	"github.com/openflagr/flagr/pkg/config"
 	"github.com/openflagr/flagr/pkg/handler"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations"
 	"github.com/sirupsen/logrus"
@@ -31,7 +30,7 @@ func configureAPI(api *operations.FlagrAPI) http.Handler {
 	api.BinProducer = runtime.ByteStreamProducer()
 
 	api.Logger = logrus.Infof
-	api.ServerShutdown = config.ServerShutdown
+	api.ServerShutdown = handler.ServerShutdown
 
 	handler.Setup(api)
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
@@ -51,12 +50,12 @@ func configureServer(s *http.Server, scheme, addr string) {
 
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
-func setupMiddlewares(handler http.Handler) http.Handler {
-	return handler
+func setupMiddlewares(httpHandler http.Handler) http.Handler {
+	return httpHandler
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
-func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return config.SetupGlobalMiddleware(handler)
+func setupGlobalMiddleware(httpHandler http.Handler) http.Handler {
+	return handler.SetupGlobalMiddleware(httpHandler)
 }

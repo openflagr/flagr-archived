@@ -25,6 +25,7 @@ import (
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/export"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/flag"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/health"
+	"github.com/openflagr/flagr/swagger_gen/restapi/operations/policy"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/segment"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/tag"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/variant"
@@ -59,6 +60,12 @@ func NewFlagrAPI(spec *loads.Document) *FlagrAPI {
 		FlagCreateFlagHandler: flag.CreateFlagHandlerFunc(func(params flag.CreateFlagParams) middleware.Responder {
 			return middleware.NotImplemented("operation flag.CreateFlag has not yet been implemented")
 		}),
+		PolicyCreateGroupPolicyHandler: policy.CreateGroupPolicyHandlerFunc(func(params policy.CreateGroupPolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.CreateGroupPolicy has not yet been implemented")
+		}),
+		PolicyCreatePolicyHandler: policy.CreatePolicyHandlerFunc(func(params policy.CreatePolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.CreatePolicy has not yet been implemented")
+		}),
 		SegmentCreateSegmentHandler: segment.CreateSegmentHandlerFunc(func(params segment.CreateSegmentParams) middleware.Responder {
 			return middleware.NotImplemented("operation segment.CreateSegment has not yet been implemented")
 		}),
@@ -73,6 +80,12 @@ func NewFlagrAPI(spec *loads.Document) *FlagrAPI {
 		}),
 		FlagDeleteFlagHandler: flag.DeleteFlagHandlerFunc(func(params flag.DeleteFlagParams) middleware.Responder {
 			return middleware.NotImplemented("operation flag.DeleteFlag has not yet been implemented")
+		}),
+		PolicyDeleteGroupPolicyHandler: policy.DeleteGroupPolicyHandlerFunc(func(params policy.DeleteGroupPolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.DeleteGroupPolicy has not yet been implemented")
+		}),
+		PolicyDeletePolicyHandler: policy.DeletePolicyHandlerFunc(func(params policy.DeletePolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.DeletePolicy has not yet been implemented")
 		}),
 		SegmentDeleteSegmentHandler: segment.DeleteSegmentHandlerFunc(func(params segment.DeleteSegmentParams) middleware.Responder {
 			return middleware.NotImplemented("operation segment.DeleteSegment has not yet been implemented")
@@ -94,6 +107,12 @@ func NewFlagrAPI(spec *loads.Document) *FlagrAPI {
 		}),
 		FlagFindFlagsHandler: flag.FindFlagsHandlerFunc(func(params flag.FindFlagsParams) middleware.Responder {
 			return middleware.NotImplemented("operation flag.FindFlags has not yet been implemented")
+		}),
+		PolicyFindGroupPolicyHandler: policy.FindGroupPolicyHandlerFunc(func(params policy.FindGroupPolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.FindGroupPolicy has not yet been implemented")
+		}),
+		PolicyFindPolicyHandler: policy.FindPolicyHandlerFunc(func(params policy.FindPolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.FindPolicy has not yet been implemented")
 		}),
 		SegmentFindSegmentsHandler: segment.FindSegmentsHandlerFunc(func(params segment.FindSegmentsParams) middleware.Responder {
 			return middleware.NotImplemented("operation segment.FindSegments has not yet been implemented")
@@ -136,6 +155,12 @@ func NewFlagrAPI(spec *loads.Document) *FlagrAPI {
 		}),
 		FlagPutFlagHandler: flag.PutFlagHandlerFunc(func(params flag.PutFlagParams) middleware.Responder {
 			return middleware.NotImplemented("operation flag.PutFlag has not yet been implemented")
+		}),
+		PolicyPutGroupPolicyHandler: policy.PutGroupPolicyHandlerFunc(func(params policy.PutGroupPolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.PutGroupPolicy has not yet been implemented")
+		}),
+		PolicyPutPolicyHandler: policy.PutPolicyHandlerFunc(func(params policy.PutPolicyParams) middleware.Responder {
+			return middleware.NotImplemented("operation policy.PutPolicy has not yet been implemented")
 		}),
 		SegmentPutSegmentHandler: segment.PutSegmentHandlerFunc(func(params segment.PutSegmentParams) middleware.Responder {
 			return middleware.NotImplemented("operation segment.PutSegment has not yet been implemented")
@@ -196,6 +221,10 @@ type FlagrAPI struct {
 	ConstraintCreateConstraintHandler constraint.CreateConstraintHandler
 	// FlagCreateFlagHandler sets the operation handler for the create flag operation
 	FlagCreateFlagHandler flag.CreateFlagHandler
+	// PolicyCreateGroupPolicyHandler sets the operation handler for the create group policy operation
+	PolicyCreateGroupPolicyHandler policy.CreateGroupPolicyHandler
+	// PolicyCreatePolicyHandler sets the operation handler for the create policy operation
+	PolicyCreatePolicyHandler policy.CreatePolicyHandler
 	// SegmentCreateSegmentHandler sets the operation handler for the create segment operation
 	SegmentCreateSegmentHandler segment.CreateSegmentHandler
 	// TagCreateTagHandler sets the operation handler for the create tag operation
@@ -206,6 +235,10 @@ type FlagrAPI struct {
 	ConstraintDeleteConstraintHandler constraint.DeleteConstraintHandler
 	// FlagDeleteFlagHandler sets the operation handler for the delete flag operation
 	FlagDeleteFlagHandler flag.DeleteFlagHandler
+	// PolicyDeleteGroupPolicyHandler sets the operation handler for the delete group policy operation
+	PolicyDeleteGroupPolicyHandler policy.DeleteGroupPolicyHandler
+	// PolicyDeletePolicyHandler sets the operation handler for the delete policy operation
+	PolicyDeletePolicyHandler policy.DeletePolicyHandler
 	// SegmentDeleteSegmentHandler sets the operation handler for the delete segment operation
 	SegmentDeleteSegmentHandler segment.DeleteSegmentHandler
 	// TagDeleteTagHandler sets the operation handler for the delete tag operation
@@ -220,6 +253,10 @@ type FlagrAPI struct {
 	DistributionFindDistributionsHandler distribution.FindDistributionsHandler
 	// FlagFindFlagsHandler sets the operation handler for the find flags operation
 	FlagFindFlagsHandler flag.FindFlagsHandler
+	// PolicyFindGroupPolicyHandler sets the operation handler for the find group policy operation
+	PolicyFindGroupPolicyHandler policy.FindGroupPolicyHandler
+	// PolicyFindPolicyHandler sets the operation handler for the find policy operation
+	PolicyFindPolicyHandler policy.FindPolicyHandler
 	// SegmentFindSegmentsHandler sets the operation handler for the find segments operation
 	SegmentFindSegmentsHandler segment.FindSegmentsHandler
 	// TagFindTagsHandler sets the operation handler for the find tags operation
@@ -248,6 +285,10 @@ type FlagrAPI struct {
 	DistributionPutDistributionsHandler distribution.PutDistributionsHandler
 	// FlagPutFlagHandler sets the operation handler for the put flag operation
 	FlagPutFlagHandler flag.PutFlagHandler
+	// PolicyPutGroupPolicyHandler sets the operation handler for the put group policy operation
+	PolicyPutGroupPolicyHandler policy.PutGroupPolicyHandler
+	// PolicyPutPolicyHandler sets the operation handler for the put policy operation
+	PolicyPutPolicyHandler policy.PutPolicyHandler
 	// SegmentPutSegmentHandler sets the operation handler for the put segment operation
 	SegmentPutSegmentHandler segment.PutSegmentHandler
 	// SegmentPutSegmentsReorderHandler sets the operation handler for the put segments reorder operation
@@ -344,6 +385,12 @@ func (o *FlagrAPI) Validate() error {
 	if o.FlagCreateFlagHandler == nil {
 		unregistered = append(unregistered, "flag.CreateFlagHandler")
 	}
+	if o.PolicyCreateGroupPolicyHandler == nil {
+		unregistered = append(unregistered, "policy.CreateGroupPolicyHandler")
+	}
+	if o.PolicyCreatePolicyHandler == nil {
+		unregistered = append(unregistered, "policy.CreatePolicyHandler")
+	}
 	if o.SegmentCreateSegmentHandler == nil {
 		unregistered = append(unregistered, "segment.CreateSegmentHandler")
 	}
@@ -358,6 +405,12 @@ func (o *FlagrAPI) Validate() error {
 	}
 	if o.FlagDeleteFlagHandler == nil {
 		unregistered = append(unregistered, "flag.DeleteFlagHandler")
+	}
+	if o.PolicyDeleteGroupPolicyHandler == nil {
+		unregistered = append(unregistered, "policy.DeleteGroupPolicyHandler")
+	}
+	if o.PolicyDeletePolicyHandler == nil {
+		unregistered = append(unregistered, "policy.DeletePolicyHandler")
 	}
 	if o.SegmentDeleteSegmentHandler == nil {
 		unregistered = append(unregistered, "segment.DeleteSegmentHandler")
@@ -379,6 +432,12 @@ func (o *FlagrAPI) Validate() error {
 	}
 	if o.FlagFindFlagsHandler == nil {
 		unregistered = append(unregistered, "flag.FindFlagsHandler")
+	}
+	if o.PolicyFindGroupPolicyHandler == nil {
+		unregistered = append(unregistered, "policy.FindGroupPolicyHandler")
+	}
+	if o.PolicyFindPolicyHandler == nil {
+		unregistered = append(unregistered, "policy.FindPolicyHandler")
 	}
 	if o.SegmentFindSegmentsHandler == nil {
 		unregistered = append(unregistered, "segment.FindSegmentsHandler")
@@ -421,6 +480,12 @@ func (o *FlagrAPI) Validate() error {
 	}
 	if o.FlagPutFlagHandler == nil {
 		unregistered = append(unregistered, "flag.PutFlagHandler")
+	}
+	if o.PolicyPutGroupPolicyHandler == nil {
+		unregistered = append(unregistered, "policy.PutGroupPolicyHandler")
+	}
+	if o.PolicyPutPolicyHandler == nil {
+		unregistered = append(unregistered, "policy.PutPolicyHandler")
 	}
 	if o.SegmentPutSegmentHandler == nil {
 		unregistered = append(unregistered, "segment.PutSegmentHandler")
@@ -538,6 +603,14 @@ func (o *FlagrAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
+	o.handlers["POST"]["/group"] = policy.NewCreateGroupPolicy(o.context, o.PolicyCreateGroupPolicyHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/policy"] = policy.NewCreatePolicy(o.context, o.PolicyCreatePolicyHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
 	o.handlers["POST"]["/flags/{flagID}/segments"] = segment.NewCreateSegment(o.context, o.SegmentCreateSegmentHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -555,6 +628,14 @@ func (o *FlagrAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/flags/{flagID}"] = flag.NewDeleteFlag(o.context, o.FlagDeleteFlagHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/group"] = policy.NewDeleteGroupPolicy(o.context, o.PolicyDeleteGroupPolicyHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/policy"] = policy.NewDeletePolicy(o.context, o.PolicyDeletePolicyHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
@@ -583,6 +664,14 @@ func (o *FlagrAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/flags"] = flag.NewFindFlags(o.context, o.FlagFindFlagsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/group"] = policy.NewFindGroupPolicy(o.context, o.PolicyFindGroupPolicyHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/policy"] = policy.NewFindPolicy(o.context, o.PolicyFindPolicyHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -639,6 +728,14 @@ func (o *FlagrAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/flags/{flagID}"] = flag.NewPutFlag(o.context, o.FlagPutFlagHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/group"] = policy.NewPutGroupPolicy(o.context, o.PolicyPutGroupPolicyHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/policy"] = policy.NewPutPolicy(o.context, o.PolicyPutPolicyHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

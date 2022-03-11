@@ -1,9 +1,13 @@
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/caarlos0/env"
+)
 
 // Config is the whole configuration of the app
-var Config = struct {
+type ConfigStruct struct {
 	// Host - Flagr server host
 	Host string `env:"HOST" envDefault:"localhost"`
 	// Port - Flagr server port
@@ -216,4 +220,18 @@ var Config = struct {
 	// UI path  => localhost:18000/foo"
 	// API path => localhost:18000/foo/api/v1"
 	WebPrefix string `env:"FLAGR_WEB_PREFIX" envDefault:""`
-}{}
+
+	// Casbin (Role Based Access Control) configuration
+	CasbinEnforcementEnabled bool   `env:"FLAGR_CASBIN_ENFORCEMENT_ENABLED" envDefault:"false"`
+	CasbinModelPath          string `env:"FLAGR_CASBIN_MODEL_PATH" envDefault:"rbac_model.conf"`
+	CasbinPassJWTClaimsField string `env:"FLAGR_CASBIN_PASS_JWT_CLAIMS_FIELD" envDefault:""`
+}
+
+var Config = ConfigStruct{}
+
+// reset the config struct values, mainly for testing
+func ResetConfig() {
+	Config = ConfigStruct{}
+
+	env.Parse(&Config)
+}

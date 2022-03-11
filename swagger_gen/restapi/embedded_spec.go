@@ -1293,6 +1293,135 @@ func init() {
         }
       }
     },
+    "/group": {
+      "get": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "findGroupPolicy",
+        "parameters": [
+          {
+            "description": "Find Casbin group policies, optionally filtering by subject or group name",
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/findGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/findGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "putGroupPolicy",
+        "parameters": [
+          {
+            "description": "Update an existing Casbin group policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/putGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/putGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "createGroupPolicy",
+        "parameters": [
+          {
+            "description": "Create a new Casbin group policy, effectively making a subject (user or group) a member of a group.",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/createGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/createGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "deleteGroupPolicy",
+        "parameters": [
+          {
+            "description": "Delete a Casbin group policy (remove a subject from a group)",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/deleteGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/deleteGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "description": "Check if Flagr is healthy",
@@ -1305,6 +1434,131 @@ func init() {
             "description": "status of health check",
             "schema": {
               "$ref": "#/definitions/health"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/policy": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "findPolicy",
+        "parameters": [
+          {
+            "description": "Find Casbin policies, optionally filtering by User, Action, and/or Object",
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/findPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/findPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "putPolicy",
+        "parameters": [
+          {
+            "description": "Update an existing Casbin policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/putPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/putPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "createPolicy",
+        "parameters": [
+          {
+            "description": "Create a new Casbin policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/createPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/createPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "deletePolicy",
+        "parameters": [
+          {
+            "description": "Delete a Casbin policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/deletePolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/deletePolicyResponse"
             }
           },
           "default": {
@@ -1449,6 +1703,18 @@ func init() {
         }
       }
     },
+    "createGroupPolicyContext": {
+      "$ref": "#/definitions/groupPolicy"
+    },
+    "createGroupPolicyResponse": {
+      "type": "object"
+    },
+    "createPolicyContext": {
+      "$ref": "#/definitions/policy"
+    },
+    "createPolicyResponse": {
+      "type": "object"
+    },
     "createSegmentRequest": {
       "type": "object",
       "required": [
@@ -1493,6 +1759,18 @@ func init() {
           "minLength": 1
         }
       }
+    },
+    "deleteGroupPolicyContext": {
+      "$ref": "#/definitions/groupPolicy"
+    },
+    "deleteGroupPolicyResponse": {
+      "type": "object"
+    },
+    "deletePolicyContext": {
+      "$ref": "#/definitions/policy"
+    },
+    "deletePolicyResponse": {
+      "type": "object"
     },
     "distribution": {
       "type": "object",
@@ -1717,6 +1995,53 @@ func init() {
         }
       }
     },
+    "findGroupPolicyContext": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
+    "findGroupPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/groupPolicy"
+          }
+        }
+      }
+    },
+    "findPolicyContext": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "object": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
+    "findPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/policy"
+          }
+        }
+      }
+    },
     "flag": {
       "type": "object",
       "required": [
@@ -1810,10 +2135,44 @@ func init() {
         }
       }
     },
+    "groupPolicy": {
+      "type": "object",
+      "required": [
+        "group",
+        "subject"
+      ],
+      "properties": {
+        "group": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
     "health": {
       "type": "object",
       "properties": {
         "status": {
+          "type": "string"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "subject",
+        "object",
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "object": {
+          "type": "string"
+        },
+        "subject": {
           "type": "string"
         }
       }
@@ -1863,6 +2222,42 @@ func init() {
           "x-nullable": true
         }
       }
+    },
+    "putGroupPolicyContext": {
+      "type": "object",
+      "required": [
+        "oldPolicy",
+        "newPolicy"
+      ],
+      "properties": {
+        "newPolicy": {
+          "$ref": "#/definitions/groupPolicy"
+        },
+        "oldPolicy": {
+          "$ref": "#/definitions/groupPolicy"
+        }
+      }
+    },
+    "putGroupPolicyResponse": {
+      "type": "object"
+    },
+    "putPolicyContext": {
+      "type": "object",
+      "required": [
+        "oldPolicy",
+        "newPolicy"
+      ],
+      "properties": {
+        "newPolicy": {
+          "$ref": "#/definitions/policy"
+        },
+        "oldPolicy": {
+          "$ref": "#/definitions/policy"
+        }
+      }
+    },
+    "putPolicyResponse": {
+      "type": "object"
     },
     "putSegmentReorderRequest": {
       "type": "object",
@@ -2047,6 +2442,10 @@ func init() {
     {
       "description": "Check if Flagr is healthy",
       "name": "health"
+    },
+    {
+      "description": "Manage Casbin policies",
+      "name": "policy"
     }
   ],
   "x-tagGroups": [
@@ -2077,6 +2476,13 @@ func init() {
       "name": "Export",
       "tags": [
         "export"
+      ]
+    },
+    {
+      "name": "RBAC Management",
+      "tags": [
+        "policy",
+        "group"
       ]
     }
   ]
@@ -3357,6 +3763,135 @@ func init() {
         }
       }
     },
+    "/group": {
+      "get": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "findGroupPolicy",
+        "parameters": [
+          {
+            "description": "Find Casbin group policies, optionally filtering by subject or group name",
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/findGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/findGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "putGroupPolicy",
+        "parameters": [
+          {
+            "description": "Update an existing Casbin group policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/putGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/putGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "createGroupPolicy",
+        "parameters": [
+          {
+            "description": "Create a new Casbin group policy, effectively making a subject (user or group) a member of a group.",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/createGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/createGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "policy",
+          "grouping"
+        ],
+        "operationId": "deleteGroupPolicy",
+        "parameters": [
+          {
+            "description": "Delete a Casbin group policy (remove a subject from a group)",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/deleteGroupPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/deleteGroupPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "description": "Check if Flagr is healthy",
@@ -3369,6 +3904,131 @@ func init() {
             "description": "status of health check",
             "schema": {
               "$ref": "#/definitions/health"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/policy": {
+      "get": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "findPolicy",
+        "parameters": [
+          {
+            "description": "Find Casbin policies, optionally filtering by User, Action, and/or Object",
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/findPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/findPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "putPolicy",
+        "parameters": [
+          {
+            "description": "Update an existing Casbin policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/putPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/putPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "createPolicy",
+        "parameters": [
+          {
+            "description": "Create a new Casbin policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/createPolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/createPolicyResponse"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "policy"
+        ],
+        "operationId": "deletePolicy",
+        "parameters": [
+          {
+            "description": "Delete a Casbin policy",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/deletePolicyContext"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation result",
+            "schema": {
+              "$ref": "#/definitions/deletePolicyResponse"
             }
           },
           "default": {
@@ -3513,6 +4173,18 @@ func init() {
         }
       }
     },
+    "createGroupPolicyContext": {
+      "$ref": "#/definitions/groupPolicy"
+    },
+    "createGroupPolicyResponse": {
+      "type": "object"
+    },
+    "createPolicyContext": {
+      "$ref": "#/definitions/policy"
+    },
+    "createPolicyResponse": {
+      "type": "object"
+    },
     "createSegmentRequest": {
       "type": "object",
       "required": [
@@ -3558,6 +4230,18 @@ func init() {
           "minLength": 1
         }
       }
+    },
+    "deleteGroupPolicyContext": {
+      "$ref": "#/definitions/groupPolicy"
+    },
+    "deleteGroupPolicyResponse": {
+      "type": "object"
+    },
+    "deletePolicyContext": {
+      "$ref": "#/definitions/policy"
+    },
+    "deletePolicyResponse": {
+      "type": "object"
     },
     "distribution": {
       "type": "object",
@@ -3783,6 +4467,53 @@ func init() {
         }
       }
     },
+    "findGroupPolicyContext": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
+    "findGroupPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/groupPolicy"
+          }
+        }
+      }
+    },
+    "findPolicyContext": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "object": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
+    "findPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/policy"
+          }
+        }
+      }
+    },
     "flag": {
       "type": "object",
       "required": [
@@ -3876,10 +4607,44 @@ func init() {
         }
       }
     },
+    "groupPolicy": {
+      "type": "object",
+      "required": [
+        "group",
+        "subject"
+      ],
+      "properties": {
+        "group": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
     "health": {
       "type": "object",
       "properties": {
         "status": {
+          "type": "string"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "subject",
+        "object",
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "object": {
+          "type": "string"
+        },
+        "subject": {
           "type": "string"
         }
       }
@@ -3929,6 +4694,42 @@ func init() {
           "x-nullable": true
         }
       }
+    },
+    "putGroupPolicyContext": {
+      "type": "object",
+      "required": [
+        "oldPolicy",
+        "newPolicy"
+      ],
+      "properties": {
+        "newPolicy": {
+          "$ref": "#/definitions/groupPolicy"
+        },
+        "oldPolicy": {
+          "$ref": "#/definitions/groupPolicy"
+        }
+      }
+    },
+    "putGroupPolicyResponse": {
+      "type": "object"
+    },
+    "putPolicyContext": {
+      "type": "object",
+      "required": [
+        "oldPolicy",
+        "newPolicy"
+      ],
+      "properties": {
+        "newPolicy": {
+          "$ref": "#/definitions/policy"
+        },
+        "oldPolicy": {
+          "$ref": "#/definitions/policy"
+        }
+      }
+    },
+    "putPolicyResponse": {
+      "type": "object"
     },
     "putSegmentReorderRequest": {
       "type": "object",
@@ -4116,6 +4917,10 @@ func init() {
     {
       "description": "Check if Flagr is healthy",
       "name": "health"
+    },
+    {
+      "description": "Manage Casbin policies",
+      "name": "policy"
     }
   ],
   "x-tagGroups": [
@@ -4146,6 +4951,13 @@ func init() {
       "name": "Export",
       "tags": [
         "export"
+      ]
+    },
+    {
+      "name": "RBAC Management",
+      "tags": [
+        "policy",
+        "group"
       ]
     }
   ]

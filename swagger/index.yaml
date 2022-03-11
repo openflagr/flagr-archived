@@ -21,6 +21,8 @@ tags:
     description: Evaluation is the process of evaluating a flag given the entity context
   - name: health
     description: Check if Flagr is healthy
+  - name: policy
+    description: Manage Casbin policies
 x-tagGroups:
   - name: Flag Management
     tags:
@@ -39,6 +41,10 @@ x-tagGroups:
   - name: Export
     tags:
       - export
+  - name: RBAC Management
+    tags:
+      - policy
+      - group
 consumes:
 - application/json
 produces:
@@ -91,6 +97,10 @@ paths:
     $ref: ./export_sqlite.yaml
   /export/eval_cache/json:
     $ref: ./export_eval_cache_json.yaml
+  /policy:
+    $ref: ./policy.yaml
+  /group:
+    $ref: ./group.yaml
 
 
 definitions:
@@ -596,3 +606,107 @@ definitions:
         type: string
         minLength: 1
 
+  # RBAC Policies
+  policy:
+    type: object
+    required:
+      - subject
+      - object
+      - action
+    properties:
+      subject:
+        type: string
+      object:
+        type: string
+      action:
+        type: string
+
+  createPolicyContext:
+    $ref: "#/definitions/policy"
+  createPolicyResponse:
+    type: object
+
+  putPolicyContext:
+    type: object
+    required:
+      - oldPolicy
+      - newPolicy
+    properties:
+      oldPolicy:
+        $ref: "#/definitions/policy"
+      newPolicy:
+        $ref: "#/definitions/policy"
+  putPolicyResponse:
+    type: object
+
+  deletePolicyContext:
+    $ref: "#/definitions/policy"
+  deletePolicyResponse:
+    type: object
+
+  findPolicyContext:
+    type: object
+    properties:
+      subject:
+        type: string
+      object:
+        type: string
+      action:
+        type: string
+  findPolicyResponse:
+    type: object
+    properties:
+      policies:
+        type: array
+        items:
+          $ref: "#/definitions/policy"
+
+  # RBAC Grouping
+  groupPolicy:
+    type: object
+    required:
+      - group
+      - subject
+    properties:
+      group:
+        type: string
+      subject:
+        type: string
+  
+  createGroupPolicyContext:
+    $ref: "#/definitions/groupPolicy"
+  createGroupPolicyResponse:
+    type: object
+
+  putGroupPolicyContext:
+    type: object
+    required:
+      - oldPolicy
+      - newPolicy
+    properties:
+      oldPolicy:
+        $ref: "#/definitions/groupPolicy"
+      newPolicy:
+        $ref: "#/definitions/groupPolicy"
+  putGroupPolicyResponse:
+    type: object
+
+  deleteGroupPolicyContext:
+    $ref: "#/definitions/groupPolicy"
+  deleteGroupPolicyResponse:
+    type: object
+
+  findGroupPolicyContext:
+    type: object
+    properties:
+      group:
+        type: string
+      subject:
+        type: string
+  findGroupPolicyResponse:
+    type: object
+    properties:
+      policies:
+        type: array
+        items:
+          $ref: "#/definitions/groupPolicy"

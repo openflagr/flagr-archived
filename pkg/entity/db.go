@@ -10,6 +10,7 @@ import (
 	sqlite "gorm.io/driver/sqlite"     // sqlite driver
 
 	retry "github.com/avast/retry-go"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/openflagr/flagr/pkg/config"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -32,6 +33,7 @@ var AutoMigrateTables = []interface{}{
 	Variant{},
 	Tag{},
 	FlagEntityType{},
+	gormadapter.CasbinRule{},
 }
 
 func connectDB() (db *gorm.DB, err error) {
@@ -44,18 +46,18 @@ func connectDB() (db *gorm.DB, err error) {
 	err = retry.Do(
 		func() error {
 			switch config.Config.DBDriver {
-				case "postgres":
-					db, err = gorm.Open(postgres.Open(config.Config.DBConnectionStr), &gorm.Config{
-						Logger: logger,
-					})
-				case "sqlite3":
-					db, err = gorm.Open(sqlite.Open(config.Config.DBConnectionStr), &gorm.Config{
-						Logger: logger,
-					})
-				case "mysql":
-					db, err = gorm.Open(mysql.Open(config.Config.DBConnectionStr), &gorm.Config{
-						Logger: logger,
-					})
+			case "postgres":
+				db, err = gorm.Open(postgres.Open(config.Config.DBConnectionStr), &gorm.Config{
+					Logger: logger,
+				})
+			case "sqlite3":
+				db, err = gorm.Open(sqlite.Open(config.Config.DBConnectionStr), &gorm.Config{
+					Logger: logger,
+				})
+			case "mysql":
+				db, err = gorm.Open(mysql.Open(config.Config.DBConnectionStr), &gorm.Config{
+					Logger: logger,
+				})
 			}
 			return err
 		},

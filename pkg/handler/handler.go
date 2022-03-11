@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/go-openapi/runtime/middleware"
+
 	"github.com/openflagr/flagr/pkg/config"
 	"github.com/openflagr/flagr/pkg/entity"
 	"github.com/openflagr/flagr/swagger_gen/models"
@@ -12,6 +13,7 @@ import (
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/export"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/flag"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/health"
+	"github.com/openflagr/flagr/swagger_gen/restapi/operations/policy"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/segment"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/tag"
 	"github.com/openflagr/flagr/swagger_gen/restapi/operations/variant"
@@ -74,6 +76,18 @@ func setupCRUD(api *operations.FlagrAPI) {
 	api.VariantFindVariantsHandler = variant.FindVariantsHandlerFunc(c.FindVariants)
 	api.VariantPutVariantHandler = variant.PutVariantHandlerFunc(c.PutVariant)
 	api.VariantDeleteVariantHandler = variant.DeleteVariantHandlerFunc(c.DeleteVariant)
+
+	// policies
+	api.PolicyCreatePolicyHandler = policy.CreatePolicyHandlerFunc(CreatePolicy)
+	api.PolicyPutPolicyHandler = policy.PutPolicyHandlerFunc(PutPolicy)
+	api.PolicyDeletePolicyHandler = policy.DeletePolicyHandlerFunc(DeletePolicy)
+	api.PolicyFindPolicyHandler = policy.FindPolicyHandlerFunc(FindPolicies)
+
+	// groups
+	api.PolicyCreateGroupPolicyHandler = policy.CreateGroupPolicyHandlerFunc(CreateGroupPolicy)
+	api.PolicyPutGroupPolicyHandler = policy.PutGroupPolicyHandlerFunc(PutGroupPolicy)
+	api.PolicyDeleteGroupPolicyHandler = policy.DeleteGroupPolicyHandlerFunc(DeleteGroupPolicy)
+	api.PolicyFindGroupPolicyHandler = policy.FindGroupPolicyHandlerFunc(FindGroupPolicies)
 }
 
 func setupEvaluation(api *operations.FlagrAPI) {

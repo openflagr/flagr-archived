@@ -9,7 +9,7 @@ tags:
   - name: flag
     description: Everything about the flag
   - name: segment
-    description: 'Segment defines the audience of the flag, it''s the user segmentation'
+    description: Segment defines the audience of the flag, it's the user segmentation
   - name: constraint
     description: Constraint is the unit of defining a small subset of users
   - name: distribution
@@ -20,6 +20,8 @@ tags:
     description: Evaluation is the process of evaluating a flag given the entity context
   - name: health
     description: Check if Flagr is healthy
+  - name: policy
+    description: Manage Casbin policies
 x-tagGroups:
   - name: Flag Management
     tags:
@@ -38,6 +40,10 @@ x-tagGroups:
   - name: Export
     tags:
       - export
+  - name: RBAC Management
+    tags:
+      - policy
+      - group
 consumes:
   - application/json
 produces:
@@ -123,7 +129,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}':
+  /flags/{flagID}:
     get:
       tags:
         - flag
@@ -191,7 +197,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/restore':
+  /flags/{flagID}/restore:
     put:
       tags:
         - flag
@@ -213,7 +219,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/enabled':
+  /flags/{flagID}/enabled:
     put:
       tags:
         - flag
@@ -241,7 +247,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/tags':
+  /flags/{flagID}/tags:
     get:
       tags:
         - tag
@@ -292,7 +298,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/tags/{tagID}':
+  /flags/{flagID}/tags/{tagID}:
     delete:
       tags:
         - tag
@@ -319,7 +325,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/variants':
+  /flags/{flagID}/variants:
     get:
       tags:
         - variant
@@ -370,7 +376,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/variants/{variantID}':
+  /flags/{flagID}/variants/{variantID}:
     put:
       tags:
         - variant
@@ -431,7 +437,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/segments':
+  /flags/{flagID}/segments:
     get:
       tags:
         - segment
@@ -482,7 +488,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/segments/reorder':
+  /flags/{flagID}/segments/reorder:
     put:
       tags:
         - segment
@@ -508,7 +514,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/segments/{segmentID}':
+  /flags/{flagID}/segments/{segmentID}:
     put:
       tags:
         - segment
@@ -569,7 +575,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/segments/{segmentID}/constraints':
+  /flags/{flagID}/segments/{segmentID}/constraints:
     get:
       tags:
         - constraint
@@ -634,7 +640,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/segments/{segmentID}/constraints/{constraintID}':
+  /flags/{flagID}/segments/{segmentID}/constraints/{constraintID}:
     put:
       tags:
         - constraint
@@ -709,7 +715,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/segments/{segmentID}/distributions':
+  /flags/{flagID}/segments/{segmentID}/distributions:
     get:
       tags:
         - distribution
@@ -777,7 +783,7 @@ paths:
           description: generic error response
           schema:
             $ref: '#/definitions/error'
-  '/flags/{flagID}/snapshots':
+  /flags/{flagID}/snapshots:
     get:
       tags:
         - flag
@@ -947,6 +953,176 @@ paths:
           description: OK
           schema:
             type: object
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /policy:
+    post:
+      tags:
+        - policy
+      operationId: createPolicy
+      parameters:
+        - in: body
+          name: body
+          description: Create a new Casbin policy
+          required: true
+          schema:
+            $ref: '#/definitions/createPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/createPolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - policy
+      operationId: putPolicy
+      parameters:
+        - in: body
+          name: body
+          description: Update an existing Casbin policy
+          required: true
+          schema:
+            $ref: '#/definitions/putPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/putPolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - policy
+      operationId: deletePolicy
+      parameters:
+        - in: body
+          name: body
+          description: Delete a Casbin policy
+          required: true
+          schema:
+            $ref: '#/definitions/deletePolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/deletePolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    get:
+      tags:
+        - policy
+      operationId: findPolicy
+      parameters:
+        - in: body
+          name: body
+          description: >-
+            Find Casbin policies, optionally filtering by User, Action, and/or
+            Object
+          schema:
+            $ref: '#/definitions/findPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/findPolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+  /group:
+    post:
+      tags:
+        - policy
+        - grouping
+      operationId: createGroupPolicy
+      parameters:
+        - in: body
+          name: body
+          description: >-
+            Create a new Casbin group policy, effectively making a subject (user
+            or group) a member of a group.
+          required: true
+          schema:
+            $ref: '#/definitions/createGroupPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/createGroupPolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    put:
+      tags:
+        - policy
+        - grouping
+      operationId: putGroupPolicy
+      parameters:
+        - in: body
+          name: body
+          description: Update an existing Casbin group policy
+          required: true
+          schema:
+            $ref: '#/definitions/putGroupPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/putGroupPolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    delete:
+      tags:
+        - policy
+        - grouping
+      operationId: deleteGroupPolicy
+      parameters:
+        - in: body
+          name: body
+          description: Delete a Casbin group policy (remove a subject from a group)
+          required: true
+          schema:
+            $ref: '#/definitions/deleteGroupPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/deleteGroupPolicyResponse'
+        default:
+          description: generic error response
+          schema:
+            $ref: '#/definitions/error'
+    get:
+      tags:
+        - policy
+        - grouping
+      operationId: findGroupPolicy
+      parameters:
+        - in: body
+          name: body
+          description: >-
+            Find Casbin group policies, optionally filtering by subject or group
+            name
+          schema:
+            $ref: '#/definitions/findGroupPolicyContext'
+      responses:
+        '200':
+          description: evaluation result
+          schema:
+            $ref: '#/definitions/findGroupPolicyResponse'
         default:
           description: generic error response
           schema:
@@ -1447,3 +1623,96 @@ definitions:
       message:
         type: string
         minLength: 1
+  policy:
+    type: object
+    required:
+      - subject
+      - object
+      - action
+    properties:
+      subject:
+        type: string
+      object:
+        type: string
+      action:
+        type: string
+  createPolicyContext:
+    $ref: '#/definitions/policy'
+  createPolicyResponse:
+    type: object
+  putPolicyContext:
+    type: object
+    required:
+      - oldPolicy
+      - newPolicy
+    properties:
+      oldPolicy:
+        $ref: '#/definitions/policy'
+      newPolicy:
+        $ref: '#/definitions/policy'
+  putPolicyResponse:
+    type: object
+  deletePolicyContext:
+    $ref: '#/definitions/policy'
+  deletePolicyResponse:
+    type: object
+  findPolicyContext:
+    type: object
+    properties:
+      subject:
+        type: string
+      object:
+        type: string
+      action:
+        type: string
+  findPolicyResponse:
+    type: object
+    properties:
+      policies:
+        type: array
+        items:
+          $ref: '#/definitions/policy'
+  groupPolicy:
+    type: object
+    required:
+      - group
+      - subject
+    properties:
+      group:
+        type: string
+      subject:
+        type: string
+  createGroupPolicyContext:
+    $ref: '#/definitions/groupPolicy'
+  createGroupPolicyResponse:
+    type: object
+  putGroupPolicyContext:
+    type: object
+    required:
+      - oldPolicy
+      - newPolicy
+    properties:
+      oldPolicy:
+        $ref: '#/definitions/groupPolicy'
+      newPolicy:
+        $ref: '#/definitions/groupPolicy'
+  putGroupPolicyResponse:
+    type: object
+  deleteGroupPolicyContext:
+    $ref: '#/definitions/groupPolicy'
+  deleteGroupPolicyResponse:
+    type: object
+  findGroupPolicyContext:
+    type: object
+    properties:
+      group:
+        type: string
+      subject:
+        type: string
+  findGroupPolicyResponse:
+    type: object
+    properties:
+      policies:
+        type: array
+        items:
+          $ref: '#/definitions/groupPolicy'

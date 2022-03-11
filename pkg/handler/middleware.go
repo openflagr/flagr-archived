@@ -1,4 +1,4 @@
-package config
+package handler
 
 import (
 	"crypto/subtle"
@@ -13,6 +13,8 @@ import (
 	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/gohttp/pprof"
 	negronilogrus "github.com/meatballhat/negroni-logrus"
+	"github.com/openflagr/flagr/pkg/config"
+	"github.com/openflagr/flagr/pkg/entity"
 	"github.com/phyber/negroni-gzip/gzip"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,82 +28,86 @@ import (
 // ServerShutdown is a callback function that will be called when
 // we tear down the flagr server
 func ServerShutdown() {
-	if Config.StatsdEnabled && Config.StatsdAPMEnabled {
+	if config.Config.StatsdEnabled && config.Config.StatsdAPMEnabled {
 		tracer.Stop()
 	}
 }
 
-// SetupGlobalMiddleware setup the global middleware
+// Setupconfig.GlobalMiddleware setup the config.global middleware
 func SetupGlobalMiddleware(handler http.Handler) http.Handler {
 	n := negroni.New()
 
-	if Config.MiddlewareGzipEnabled {
+	if config.Config.MiddlewareGzipEnabled {
 		n.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
 
-	if Config.MiddlewareVerboseLoggerEnabled {
+	if config.Config.MiddlewareVerboseLoggerEnabled {
 		middleware := negronilogrus.NewMiddlewareFromLogger(logrus.StandardLogger(), "flagr")
 
-		for _, u := range Config.MiddlewareVerboseLoggerExcludeURLs {
+		for _, u := range config.Config.MiddlewareVerboseLoggerExcludeURLs {
 			middleware.ExcludeURL(u)
 		}
 
 		n.Use(middleware)
 	}
 
-	if Config.StatsdEnabled {
-		n.Use(&statsdMiddleware{StatsdClient: Global.StatsdClient})
+	if config.Config.StatsdEnabled {
+		n.Use(&statsdMiddleware{StatsdClient: config.Global.StatsdClient})
 
-		if Config.StatsdAPMEnabled {
+		if config.Config.StatsdAPMEnabled {
 			tracer.Start(
-				tracer.WithAgentAddr(fmt.Sprintf("%s:%s", Config.StatsdHost, Config.StatsdAPMPort)),
-				tracer.WithServiceName(Config.StatsdAPMServiceName),
+				tracer.WithAgentAddr(fmt.Sprintf("%s:%s", config.Config.StatsdHost, config.Config.StatsdAPMPort)),
+				tracer.WithServiceName(config.Config.StatsdAPMServiceName),
 			)
 		}
 	}
 
-	if Config.PrometheusEnabled {
+	if config.Config.PrometheusEnabled {
 		n.Use(&prometheusMiddleware{
-			counter:   Global.Prometheus.RequestCounter,
-			latencies: Global.Prometheus.RequestHistogram,
+			counter:   config.Global.Prometheus.RequestCounter,
+			latencies: config.Global.Prometheus.RequestHistogram,
 		})
 	}
 
-	if Config.NewRelicEnabled {
-		n.Use(&negroninewrelic.Newrelic{Application: &Global.NewrelicApp})
+	if config.Config.NewRelicEnabled {
+		n.Use(&negroninewrelic.Newrelic{Application: &config.Global.NewrelicApp})
 	}
 
-	if Config.CORSEnabled {
+	if config.Config.CORSEnabled {
 		n.Use(cors.New(cors.Options{
-			AllowedOrigins:   Config.CORSAllowedOrigins,
-			AllowedHeaders:   Config.CORSAllowedHeaders,
-			ExposedHeaders:   Config.CORSExposedHeaders,
-			AllowedMethods:   Config.CORSAllowedMethods,
-			AllowCredentials: Config.CORSAllowCredentials,
+			AllowedOrigins:   config.Config.CORSAllowedOrigins,
+			AllowedHeaders:   config.Config.CORSAllowedHeaders,
+			ExposedHeaders:   config.Config.CORSExposedHeaders,
+			AllowedMethods:   config.Config.CORSAllowedMethods,
+			AllowCredentials: config.Config.CORSAllowCredentials,
 		}))
 	}
 
-	if Config.JWTAuthEnabled {
+	if config.Config.JWTAuthEnabled {
 		n.Use(setupJWTAuthMiddleware())
 	}
 
-	if Config.BasicAuthEnabled {
+	if config.Config.BasicAuthEnabled {
 		n.Use(setupBasicAuthMiddleware())
+	}
+
+	if config.Config.CasbinEnforcementEnabled {
+		n.Use(setupCasbinMiddleware())
 	}
 
 	n.Use(&negroni.Static{
 		Dir:       http.Dir("./browser/flagr-ui/dist/"),
-		Prefix:    Config.WebPrefix,
+		Prefix:    config.Config.WebPrefix,
 		IndexFile: "index.html",
 	})
 
 	n.Use(setupRecoveryMiddleware())
 
-	if Config.WebPrefix != "" {
-		handler = http.StripPrefix(Config.WebPrefix, handler)
+	if config.Config.WebPrefix != "" {
+		handler = http.StripPrefix(config.Config.WebPrefix, handler)
 	}
 
-	if Config.PProfEnabled {
+	if config.Config.PProfEnabled {
 		n.UseHandler(pprof.New()(handler))
 	} else {
 		n.UseHandler(handler)
@@ -127,31 +133,31 @@ func setupRecoveryMiddleware() *negroni.Recovery {
 }
 
 /**
-setupJWTAuthMiddleware setup an JWTMiddleware from the ENV config
+setupJWTAuthMiddleware setup an JWTMiddleware from the ENV config.config
 */
 func setupJWTAuthMiddleware() *jwtAuth {
 	var signingMethod jwt.SigningMethod
 	var validationKey interface{}
 	var errParsingKey error
 
-	switch Config.JWTAuthSigningMethod {
+	switch config.Config.JWTAuthSigningMethod {
 	case "HS256":
 		signingMethod = jwt.SigningMethodHS256
-		validationKey = []byte(Config.JWTAuthSecret)
+		validationKey = []byte(config.Config.JWTAuthSecret)
 	case "HS512":
 		signingMethod = jwt.SigningMethodHS512
-		validationKey = []byte(Config.JWTAuthSecret)
+		validationKey = []byte(config.Config.JWTAuthSecret)
 	case "RS256":
 		signingMethod = jwt.SigningMethodRS256
-		validationKey, errParsingKey = jwt.ParseRSAPublicKeyFromPEM([]byte(Config.JWTAuthSecret))
+		validationKey, errParsingKey = jwt.ParseRSAPublicKeyFromPEM([]byte(config.Config.JWTAuthSecret))
 	default:
 		signingMethod = jwt.SigningMethodHS256
 		validationKey = []byte("")
 	}
 
 	return &jwtAuth{
-		PrefixWhitelistPaths: Config.JWTAuthPrefixWhitelistPaths,
-		ExactWhitelistPaths:  Config.JWTAuthExactWhitelistPaths,
+		PrefixWhitelistPaths: config.Config.JWTAuthPrefixWhitelistPaths,
+		ExactWhitelistPaths:  config.Config.JWTAuthExactWhitelistPaths,
 		JWTMiddleware: jwtmiddleware.New(jwtmiddleware.Options{
 			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 				return validationKey, errParsingKey
@@ -159,7 +165,7 @@ func setupJWTAuthMiddleware() *jwtAuth {
 			SigningMethod: signingMethod,
 			Extractor: jwtmiddleware.FromFirst(
 				func(r *http.Request) (string, error) {
-					c, err := r.Cookie(Config.JWTAuthCookieTokenName)
+					c, err := r.Cookie(config.Config.JWTAuthCookieTokenName)
 					if err != nil {
 						return "", nil
 					}
@@ -167,20 +173,20 @@ func setupJWTAuthMiddleware() *jwtAuth {
 				},
 				jwtmiddleware.FromAuthHeader,
 			),
-			UserProperty: Config.JWTAuthUserProperty,
-			Debug:        Config.JWTAuthDebug,
+			UserProperty: config.Config.JWTAuthUserProperty,
+			Debug:        config.Config.JWTAuthDebug,
 			ErrorHandler: jwtErrorHandler,
 		}),
 	}
 }
 
 func jwtErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
-	switch Config.JWTAuthNoTokenStatusCode {
+	switch config.Config.JWTAuthNoTokenStatusCode {
 	case http.StatusTemporaryRedirect:
-		http.Redirect(w, r, Config.JWTAuthNoTokenRedirectURL, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, config.Config.JWTAuthNoTokenRedirectURL, http.StatusTemporaryRedirect)
 		return
 	default:
-		w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Bearer realm="%s"`, Config.JWTAuthNoTokenRedirectURL))
+		w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Bearer realm="%s"`, config.Config.JWTAuthNoTokenRedirectURL))
 		http.Error(w, "Not authorized", http.StatusUnauthorized)
 		return
 	}
@@ -193,18 +199,20 @@ type jwtAuth struct {
 }
 
 func (a *jwtAuth) whitelist(req *http.Request) bool {
-	path := req.URL.Path
+	return checkJWTWhitelistPaths(req.URL.Path, a.ExactWhitelistPaths, a.PrefixWhitelistPaths)
+}
 
+func checkJWTWhitelistPaths(path string, exactPaths, prefixPaths []string) bool {
 	// If we set to 401 unauthorized, let the client handles the 401 itself
-	if Config.JWTAuthNoTokenStatusCode == http.StatusUnauthorized {
-		for _, p := range a.ExactWhitelistPaths {
+	if config.Config.JWTAuthNoTokenStatusCode == http.StatusUnauthorized {
+		for _, p := range exactPaths {
 			if p == path {
 				return true
 			}
 		}
 	}
 
-	for _, p := range a.PrefixWhitelistPaths {
+	for _, p := range prefixPaths {
 		if p != "" && strings.HasPrefix(path, p) {
 			return true
 		}
@@ -217,18 +225,19 @@ func (a *jwtAuth) ServeHTTP(w http.ResponseWriter, req *http.Request, next http.
 		next(w, req)
 		return
 	}
+
 	a.JWTMiddleware.HandlerWithNext(w, req, next)
 }
 
 /**
-setupBasicAuthMiddleware setup an BasicMiddleware from the ENV config
+setupBasicAuthMiddleware setup an BasicMiddleware from the ENV config.config
 */
 func setupBasicAuthMiddleware() *basicAuth {
 	return &basicAuth{
-		Username:             []byte(Config.BasicAuthUsername),
-		Password:             []byte(Config.BasicAuthPassword),
-		PrefixWhitelistPaths: Config.BasicAuthPrefixWhitelistPaths,
-		ExactWhitelistPaths:  Config.BasicAuthExactWhitelistPaths,
+		Username:             []byte(config.Config.BasicAuthUsername),
+		Password:             []byte(config.Config.BasicAuthPassword),
+		PrefixWhitelistPaths: config.Config.BasicAuthPrefixWhitelistPaths,
+		ExactWhitelistPaths:  config.Config.BasicAuthExactWhitelistPaths,
 	}
 }
 
@@ -240,15 +249,17 @@ type basicAuth struct {
 }
 
 func (a *basicAuth) whitelist(req *http.Request) bool {
-	path := req.URL.Path
+	return checkWhitelistPaths(req.URL.Path, a.ExactWhitelistPaths, a.PrefixWhitelistPaths)
+}
 
-	for _, p := range a.ExactWhitelistPaths {
+func checkWhitelistPaths(path string, exactPaths, prefixPaths []string) bool {
+	for _, p := range exactPaths {
 		if p == path {
 			return true
 		}
 	}
 
-	for _, p := range a.PrefixWhitelistPaths {
+	for _, p := range prefixPaths {
 		if p != "" && strings.HasPrefix(path, p) {
 			return true
 		}
@@ -300,7 +311,7 @@ type prometheusMiddleware struct {
 }
 
 func (p *prometheusMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	if r.URL.EscapedPath() == Global.Prometheus.ScrapePath {
+	if r.URL.EscapedPath() == config.Global.Prometheus.ScrapePath {
 		handler := promhttp.Handler()
 		handler.ServeHTTP(w, r)
 	} else {
@@ -315,5 +326,70 @@ func (p *prometheusMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request,
 			}
 		}(time.Now())
 		next(w, r)
+	}
+}
+
+func setupCasbinMiddleware() *casbinMiddleware {
+	logrus.Debug("setting up Casbin middleware")
+
+	return &casbinMiddleware{
+		entity.GetRBACController(),
+	}
+}
+
+type casbinMiddleware struct {
+	rbac *entity.RBACController
+}
+
+func (rbacMiddleware *casbinMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	if !config.Config.JWTAuthEnabled {
+		logrus.Error("JWT authorization is disabled, requests will be denied")
+
+		http.Error(w, "Not authorized", http.StatusUnauthorized)
+
+		return
+	}
+
+	// check the path against the JWT auth whitelist
+	if checkJWTWhitelistPaths(r.URL.Path, config.Config.JWTAuthExactWhitelistPaths, config.Config.JWTAuthPrefixWhitelistPaths) {
+		next(w, r)
+
+		return
+	}
+
+	// get the claims from the JWT
+	var user string
+	var claim interface{}
+
+	if token, ok := r.Context().Value(config.Config.JWTAuthUserProperty).(*jwt.Token); ok {
+		claims := token.Claims.(jwt.MapClaims)
+		user = claims[config.Config.JWTAuthUserClaim].(string)
+
+		if claimField, ok := claims[config.Config.CasbinPassJWTClaimsField]; ok {
+			claim = claimField
+		}
+	}
+
+	// try to match the user with a policy
+	var allow bool
+	var err error
+
+	if config.Config.CasbinPassJWTClaimsField != "" && claim != nil {
+		allow, err = rbacMiddleware.rbac.Enforcer.Enforce(user, r.URL.Path, r.Method, claim)
+	} else {
+		allow, err = rbacMiddleware.rbac.Enforcer.Enforce(user, r.URL.Path, r.Method)
+	}
+
+	if err != nil {
+		logrus.Errorf("Casbin enforcement error: %s", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+
+		return
+	}
+
+	if allow {
+		next(w, r)
+	} else {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 	}
 }
