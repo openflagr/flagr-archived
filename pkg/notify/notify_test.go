@@ -45,21 +45,33 @@ func NewTestClient(fn roundTripFunc) *Client {
 func TestNotifyAll(t *testing.T) {
 	t.Run("we return early when the flagID is not found", func(t *testing.T) {
 		db := entity.NewTestDB()
-		defer db.Close()
+		tmpDB, dbErr := db.DB()
+		if dbErr != nil {
+			t.Errorf("Failed to get database")
+		}
+		defer tmpDB.Close()
 		All(db, 1, TOGGLED, FLAG, "")
 	})
 
 	t.Run("nothing bad happens if we have the flag, but no configured integrations", func(t *testing.T) {
 		f := entity.GenFixtureFlag()
 		db := entity.PopulateTestDB(f)
-		defer db.Close()
+		tmpDB, dbErr := db.DB()
+		if dbErr != nil {
+			t.Errorf("Failed to get database")
+		}
+		defer tmpDB.Close()
 		All(db, f.ID, TOGGLED, FLAG, "")
 	})
 
 	t.Run("nothing bad happens if an integration fails to deliver and returns an error", func(t *testing.T) {
 		f := entity.GenFixtureFlag()
 		db := entity.PopulateTestDB(f)
-		defer db.Close()
+		tmpDB, dbErr := db.DB()
+		if dbErr != nil {
+			t.Errorf("Failed to get database")
+		}
+		defer tmpDB.Close()
 
 		notifier := &TestIntegration{fakeErr: errors.New("failed to notify testcase")}
 		integration := Integration{notifier: notifier, name: "test"}
